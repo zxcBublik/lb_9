@@ -13,7 +13,7 @@ struct Graph {
 	vector<node*>vertexes;
 };
 void BFS_list(Graph* G, int start);
-void BFS(vector<vector<int>>& M, int start);
+vector<int> BFS(vector<vector<int>>& M, int start);
 void print_G(Graph* G);
 void add_el(struct Graph* G, int vertex, int new_index);
 void DFS_recurs_matrix(vector<vector<int>>& M, vector<int>& visited, int count, int depth);
@@ -108,9 +108,19 @@ int main()
 
 	time_spend = (double)(end - start) / CLOCKS_PER_SEC;
 	cout << "\nВремя работы: " << time_spend << '\n';
+
+	cout << "\n\n\nМассив расстояний:\n";
+	vector<vector<int>> tmp_arr(M.size(), vector<int>(M.size(), 0));
+	for (int i = 0; i < M.size(); i++) {
+		tmp_arr[i] =  (BFS(M, i));
+		for (int j = 0; j < M.size(); j++) {
+			printf("%2d", tmp_arr[i][j]);
+		}
+		cout << '\n';
+	}
 }
 
-void BFS(vector<vector<int>>& M, int start) {
+vector<int> BFS(vector<vector<int>>& M, int start) {
 	vector<int> visited(M.size(), -1);
 	queue<int> q;
 
@@ -128,9 +138,10 @@ void BFS(vector<vector<int>>& M, int start) {
 			}
 		}
 	}
-	cout << "Расстояние от вершины " << start + 1 << ":\n";
+	/*cout << "Расстояние от вершины " << start + 1 << ":\n";
 	for (int i = 0; i < M.size(); i++)
-		cout << "До " << i + 1 << ": " << visited[i] << '\n';
+		cout << "До " << i + 1 << ": " << visited[i] << '\n';*/
+	return visited;
 }
 
 void BFS_list(Graph* G, int start) {
@@ -161,7 +172,7 @@ void BFS_list(Graph* G, int start) {
 void DFS_recurs_matrix(vector<vector<int>>& M, vector<int>& visited, int current, int depth) {
 	visited[current] = depth;
 	for (int i = 0; i < M.size(); i++) {
-		if (M[current][i] && visited[i] == -1) {
+		if (M[current][i] && (visited[i] == -1 || depth < visited[i]) ) {
 			DFS_recurs_matrix(M, visited, i, depth+1);
 		}
 	}
@@ -171,11 +182,10 @@ void DFS_recurs_list(struct Graph* G, vector<int>& visited, int current, int dep
 	visited[current] = depth;
 	node* tmp = G->vertexes[current];
 	while (tmp != nullptr) {
-		if (visited[tmp->index] == -1) {
+		if (visited[tmp->index] == -1 || depth < visited[tmp->index]) {
 			DFS_recurs_list(G, visited, tmp->index, depth + 1);
 		}
 		tmp = tmp->next_node;
-
 	}
 }
 
